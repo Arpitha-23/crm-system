@@ -1,0 +1,190 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Import Leads - CRM
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>Import Leads</h2>
+            <p class="text-muted">
+                Upload a CSV file to add multiple leads.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'lead_list' %}"
+            class="btn btn-secondary"
+        >
+            ← Back to Leads
+        </a>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                CSV Lead Import
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+
+                    <label
+                        for="csv_file"
+                        class="form-label"
+                    >
+                        Select CSV File
+                    </label>
+
+                    <input
+                        type="file"
+                        name="csv_file"
+                        id="csv_file"
+                        class="form-control"
+                        accept=".csv"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+                    Import Leads
+                </button>
+
+                <a
+                    href="{% url 'lead_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm mt-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                Required CSV Format
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                Your CSV should contain these columns:
+            </p>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>first_name</td>
+                            <td>Ananya</td>
+                        </tr>
+
+                        <tr>
+                            <td>last_name</td>
+                            <td>Kumar</td>
+                        </tr>
+
+                        <tr>
+                            <td>email</td>
+                            <td>ananya@example.com</td>
+                        </tr>
+
+                        <tr>
+                            <td>phone</td>
+                            <td>9876543210</td>
+                        </tr>
+
+                        <tr>
+                            <td>company</td>
+                            <td>ABC Technologies</td>
+                        </tr>
+
+                        <tr>
+                            <td>job_title</td>
+                            <td>Software Engineer</td>
+                        </tr>
+
+                        <tr>
+                            <td>status</td>
+                            <td>new</td>
+                        </tr>
+
+                        <tr>
+                            <td>source</td>
+                            <td>website</td>
+                        </tr>
+
+                        <tr>
+                            <td>notes</td>
+                            <td>Interested in product</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="alert alert-info">
+
+                <strong>Allowed status values:</strong><br>
+
+                new, contacted, qualified, proposal,
+                negotiation, closed_won, closed_lost
+
+                <br><br>
+
+                <strong>Allowed source values:</strong><br>
+
+                website, social_media, referral, email,
+                phone, event, other
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

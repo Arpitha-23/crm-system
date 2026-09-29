@@ -1,0 +1,393 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+CRM Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-4">
+
+
+    <!-- ============================= -->
+    <!-- HEADER -->
+    <!-- ============================= -->
+
+    <div class="mb-4">
+
+        <h2>
+            CRM Dashboard
+        </h2>
+
+        <p class="text-muted">
+            Lead management and conversion analytics
+        </p>
+
+    </div>
+
+
+
+    <!-- ============================= -->
+    <!-- STATISTICS -->
+    <!-- ============================= -->
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- Total Leads -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Leads
+                    </h6>
+
+                    <h2>
+                        {{ total_leads }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Qualified Leads -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Qualified Leads
+                    </h6>
+
+                    <h2>
+                        {{ qualified_leads }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Average Score -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Average Lead Score
+                    </h6>
+
+                    <h2>
+                        {{ average_score }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Closed Won -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Closed Won
+                    </h6>
+
+                    <h2>
+                        {{ closed_won }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Closed Lost -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Closed Lost
+                    </h6>
+
+                    <h2>
+                        {{ closed_lost }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Conversion Rate -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Conversion Rate
+                    </h6>
+
+                    <h2>
+                        {{ conversion_rate }}%
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ============================= -->
+    <!-- PIPELINE CHART -->
+    <!-- ============================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Lead Pipeline
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div
+                style="
+                    position: relative;
+                    height: 350px;
+                "
+            >
+
+                <canvas
+                    id="pipelineChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ============================= -->
+    <!-- PIPELINE TABLE -->
+    <!-- ============================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Pipeline Summary
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Stage
+                            </th>
+
+                            <th>
+                                Number of Leads
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in pipeline_data %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.name }}
+                            </td>
+
+                            <td>
+                                {{ item.count }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="2"
+                                class="text-center"
+                            >
+                                No pipeline data available.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ============================= -->
+<!-- CHART.JS -->
+<!-- ============================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+const pipelineLabels =
+    {{ pipeline_labels|safe }};
+
+
+const pipelineValues =
+    {{ pipeline_values|safe }};
+
+
+const chartElement =
+    document.getElementById(
+        'pipelineChart'
+    );
+
+
+if (chartElement) {
+
+    const ctx =
+        chartElement.getContext('2d');
+
+
+    new Chart(
+        ctx,
+        {
+
+            type: 'bar',
+
+            data: {
+
+                labels: pipelineLabels,
+
+                datasets: [
+
+                    {
+
+                        label: 'Number of Leads',
+
+                        data: pipelineValues
+
+                    }
+
+                ]
+
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            precision: 0
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+
+{% endblock %}
+

@@ -1,0 +1,112 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Login - CRM
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-5">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header text-center">
+
+                    <h4 class="mb-0">
+                        CRM Login
+                    </h4>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    {% if form.errors %}
+
+                        <div class="alert alert-danger">
+
+                            Username or password is incorrect.
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- Username -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="id_username"
+                                class="form-label"
+                            >
+                                Username
+                            </label>
+
+                            <input
+                                type="text"
+                                name="username"
+                                id="id_username"
+                                class="form-control"
+                                required
+                                autofocus
+                            >
+
+                        </div>
+
+
+                        <!-- Password -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="id_password"
+                                class="form-label"
+                            >
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                name="password"
+                                id="id_password"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            Login
+                        </button>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

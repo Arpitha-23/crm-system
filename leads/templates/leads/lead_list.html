@@ -1,0 +1,538 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Leads - CRM
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>
+                Leads
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage your CRM leads
+            </p>
+
+        </div>
+
+
+        <div class="d-flex gap-2">
+
+            <a
+                href="{% url 'import_leads' %}"
+                class="btn btn-success"
+            >
+                Import CSV
+            </a>
+
+
+            <a
+                href="{% url 'lead_create' %}"
+                class="btn btn-primary"
+            >
+                + Add Lead
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===================================================== -->
+    <!-- MESSAGES -->
+    <!-- ===================================================== -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            >
+
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+
+    <!-- ===================================================== -->
+    <!-- SEARCH & FILTERS -->
+    <!-- ===================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Search & Filter Leads
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                method="GET"
+                action="{% url 'lead_list' %}"
+            >
+
+                <div class="row g-3">
+
+
+                    <!-- SEARCH -->
+
+                    <div class="col-md-5">
+
+                        <label
+                            for="search"
+                            class="form-label"
+                        >
+                            Search
+                        </label>
+
+                        <input
+                            type="text"
+                            id="search"
+                            name="search"
+                            class="form-control"
+                            placeholder="Name, email or company"
+                            value="{{ search }}"
+                        >
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="col-md-3">
+
+                        <label
+                            for="status"
+                            class="form-label"
+                        >
+                            Status
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                All Statuses
+                            </option>
+
+
+                            <option
+                                value="new"
+                                {% if selected_status == 'new' %}
+                                    selected
+                                {% endif %}
+                            >
+                                New
+                            </option>
+
+
+                            <option
+                                value="contacted"
+                                {% if selected_status == 'contacted' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Contacted
+                            </option>
+
+
+                            <option
+                                value="qualified"
+                                {% if selected_status == 'qualified' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Qualified
+                            </option>
+
+
+                            <option
+                                value="proposal"
+                                {% if selected_status == 'proposal' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Proposal
+                            </option>
+
+
+                            <option
+                                value="negotiation"
+                                {% if selected_status == 'negotiation' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Negotiation
+                            </option>
+
+
+                            <option
+                                value="closed_won"
+                                {% if selected_status == 'closed_won' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Closed Won
+                            </option>
+
+
+                            <option
+                                value="closed_lost"
+                                {% if selected_status == 'closed_lost' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Closed Lost
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- MINIMUM SCORE -->
+
+                    <div class="col-md-2">
+
+                        <label
+                            for="min_score"
+                            class="form-label"
+                        >
+                            Minimum Score
+                        </label>
+
+                        <input
+                            type="number"
+                            id="min_score"
+                            name="min_score"
+                            class="form-control"
+                            min="0"
+                            max="100"
+                            placeholder="0-100"
+                            value="{{ min_score }}"
+                        >
+
+                    </div>
+
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            Search
+                        </button>
+
+                        <a
+                            href="{% url 'lead_list' %}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Clear
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===================================================== -->
+    <!-- LEADS TABLE -->
+    <!-- ===================================================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Lead List
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if leads %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Name
+                                </th>
+
+                                <th>
+                                    Email
+                                </th>
+
+                                <th>
+                                    Company
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Score
+                                </th>
+
+                                <th>
+                                    Source
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for lead in leads %}
+
+                                <tr>
+
+                                    <!-- NAME -->
+
+                                    <td>
+
+                                        <strong>
+                                            {{ lead.get_full_name }}
+                                        </strong>
+
+                                    </td>
+
+
+                                    <!-- EMAIL -->
+
+                                    <td>
+                                        {{ lead.email }}
+                                    </td>
+
+
+                                    <!-- COMPANY -->
+
+                                    <td>
+
+                                        {% if lead.company %}
+
+                                            {{ lead.company }}
+
+                                        {% else %}
+
+                                            <span class="text-muted">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- STATUS -->
+
+                                    <td>
+
+                                        {% if lead.status == 'new' %}
+
+                                            <span class="badge bg-secondary">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% elif lead.status == 'contacted' %}
+
+                                            <span class="badge bg-info text-dark">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% elif lead.status == 'qualified' %}
+
+                                            <span class="badge bg-primary">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% elif lead.status == 'proposal' %}
+
+                                            <span class="badge bg-warning text-dark">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% elif lead.status == 'negotiation' %}
+
+                                            <span class="badge bg-dark">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% elif lead.status == 'closed_won' %}
+
+                                            <span class="badge bg-success">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% elif lead.status == 'closed_lost' %}
+
+                                            <span class="badge bg-danger">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge bg-secondary">
+                                                {{ lead.get_status_display }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- SCORE -->
+
+                                    <td>
+
+                                        {% if lead.score >= 70 %}
+
+                                            <span class="badge bg-success">
+                                                {{ lead.score }}
+                                            </span>
+
+                                        {% elif lead.score >= 40 %}
+
+                                            <span class="badge bg-warning text-dark">
+                                                {{ lead.score }}
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge bg-secondary">
+                                                {{ lead.score }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- SOURCE -->
+
+                                    <td>
+                                        {{ lead.get_source_display }}
+                                    </td>
+
+
+                                    <!-- ACTIONS -->
+
+                                    <td>
+
+                                        <div class="d-flex gap-1">
+
+                                            <a
+                                                href="{% url 'lead_detail' lead.pk %}"
+                                                class="btn btn-sm btn-outline-primary"
+                                            >
+                                                View
+                                            </a>
+
+
+                                            <a
+                                                href="{% url 'lead_edit' lead.pk %}"
+                                                class="btn btn-sm btn-outline-secondary"
+                                            >
+                                                Edit
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-info mb-0">
+
+                    No leads found.
+
+                    <a
+                        href="{% url 'lead_create' %}"
+                        class="alert-link"
+                    >
+                        Create your first lead
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

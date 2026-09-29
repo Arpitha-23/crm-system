@@ -1,0 +1,160 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Lead Score Rules
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>
+                Lead Score Rules
+            </h2>
+
+            <p class="text-muted">
+                Rules used to automatically calculate lead scores.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Rule
+                            </th>
+
+                            <th>
+                                Field
+                            </th>
+
+                            <th>
+                                Operator
+                            </th>
+
+                            <th>
+                                Value
+                            </th>
+
+                            <th>
+                                Points
+                            </th>
+
+                            <th>
+                                Active
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for rule in rules %}
+
+                        <tr>
+
+                            <td>
+                                {{ rule.name }}
+                            </td>
+
+                            <td>
+                                {{ rule.field }}
+                            </td>
+
+                            <td>
+                                {{ rule.operator }}
+                            </td>
+
+                            <td>
+                                {{ rule.value }}
+                            </td>
+
+                            <td>
+                                {{ rule.points }}
+                            </td>
+
+                            <td>
+
+                                {% if rule.is_active %}
+
+                                    <span class="badge bg-success">
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'score_rule_delete' rule.pk %}"
+                                    class="btn btn-sm btn-danger"
+                                >
+                                    Delete
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center"
+                            >
+                                No scoring rules found.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

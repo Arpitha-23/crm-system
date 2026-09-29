@@ -1,0 +1,573 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ lead.get_full_name }} - CRM
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>{{ lead.get_full_name }}</h2>
+
+            <p class="text-muted mb-0">
+                Lead Details
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a
+                href="{% url 'activity_create' lead.pk %}"
+                class="btn btn-success"
+            >
+                + Add Activity
+            </a>
+
+            <a
+                href="{% url 'lead_edit' lead.pk %}"
+                class="btn btn-primary"
+            >
+                Edit Lead
+            </a>
+            <a
+                href="{% url 'activity_create' lead.pk %}"
+                class="btn btn-primary"
+            >
+                + Schedule Follow-up
+            </a>
+
+            <a
+                href="{% url 'lead_list' %}"
+                class="btn btn-secondary"
+            >
+                ← Back to Leads
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Lead Information -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Lead Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <strong>First Name</strong>
+                    <p class="mb-0">{{ lead.first_name }}</p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Last Name</strong>
+                    <p class="mb-0">{{ lead.last_name }}</p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Email</strong>
+                    <p class="mb-0">{{ lead.email }}</p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Phone</strong>
+                    <p class="mb-0">
+                        {% if lead.phone %}
+                            {{ lead.phone }}
+                        {% else %}
+                            <span class="text-muted">Not provided</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Company</strong>
+                    <p class="mb-0">
+                        {% if lead.company %}
+                            {{ lead.company }}
+                        {% else %}
+                            <span class="text-muted">Not provided</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Job Title</strong>
+                    <p class="mb-0">
+                        {% if lead.job_title %}
+                            {{ lead.job_title }}
+                        {% else %}
+                            <span class="text-muted">Not provided</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Status</strong>
+                    <p class="mb-0">
+                        <span class="badge bg-primary">
+                            {{ lead.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Source</strong>
+                    <p class="mb-0">
+                        {{ lead.get_source_display }}
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Lead Score</strong>
+                    <p class="mb-0">
+
+                        {% if lead.score >= 70 %}
+
+                            <span class="badge bg-success fs-6">
+                                {{ lead.score }}
+                            </span>
+
+                        {% elif lead.score >= 40 %}
+
+                            <span class="badge bg-warning text-dark fs-6">
+                                {{ lead.score }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-secondary fs-6">
+                                {{ lead.score }}
+                            </span>
+
+                        {% endif %}
+
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Assigned To</strong>
+                    <p class="mb-0">
+
+                        {% if lead.assigned_to %}
+                            {{ lead.assigned_to.username }}
+                        {% else %}
+                            <span class="text-muted">
+                                Not assigned
+                            </span>
+                        {% endif %}
+
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Created By</strong>
+                    <p class="mb-0">
+                        {{ lead.created_by.username }}
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Created At</strong>
+                    <p class="mb-0">
+                        {{ lead.created_at|date:"d M Y, h:i A" }}
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Last Updated</strong>
+                    <p class="mb-0">
+                        {{ lead.updated_at|date:"d M Y, h:i A" }}
+                    </p>
+                </div>
+
+            </div>
+
+            {% if lead.notes %}
+
+                <hr>
+
+                <strong>Notes</strong>
+
+                <p class="mt-2 mb-0">
+                    {{ lead.notes|linebreaksbr }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Follow-up Summary -->
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-primary">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-primary">
+                        Upcoming
+                    </h6>
+
+                    <h2>
+                        {{ upcoming_activities.count }}
+                    </h2>
+
+                    <small class="text-muted">
+                        Scheduled follow-ups
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-danger">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-danger">
+                        Overdue
+                    </h6>
+
+                    <h2>
+                        {{ overdue_activities.count }}
+                    </h2>
+
+                    <small class="text-muted">
+                        Follow-ups requiring attention
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-success">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-success">
+                        Completed
+                    </h6>
+
+                    <h2>
+                        {{ completed_activities.count }}
+                    </h2>
+
+                    <small class="text-muted">
+                        Completed activities
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Upcoming Follow-ups -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Upcoming Follow-ups
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if upcoming_activities %}
+
+                <div class="list-group">
+
+                    {% for activity in upcoming_activities %}
+
+                        <div class="list-group-item">
+
+                            <div class="d-flex justify-content-between">
+
+                                <div>
+
+                                    <h6 class="mb-1">
+                                        {{ activity.subject }}
+                                    </h6>
+
+                                    <span class="badge bg-info text-dark">
+                                        {{ activity.get_activity_type_display }}
+                                    </span>
+
+                                </div>
+
+                                <span class="badge bg-primary">
+                                    Upcoming
+                                </span>
+
+                            </div>
+
+                            {% if activity.description %}
+
+                                <p class="mt-2 mb-1">
+                                    {{ activity.description|linebreaksbr }}
+                                </p>
+
+                            {% endif %}
+
+                            <small class="text-muted">
+
+                                Due:
+                                {{ activity.due_date|date:"d M Y, h:i A" }}
+
+                            </small>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-info mb-0">
+
+                    No upcoming follow-ups scheduled.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Overdue Follow-ups -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0 text-danger">
+                Overdue Follow-ups
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if overdue_activities %}
+
+                <div class="list-group">
+
+                    {% for activity in overdue_activities %}
+
+                        <div class="list-group-item">
+
+                            <div class="d-flex justify-content-between">
+
+                                <div>
+
+                                    <h6 class="mb-1">
+                                        {{ activity.subject }}
+                                    </h6>
+
+                                    <span class="badge bg-info text-dark">
+                                        {{ activity.get_activity_type_display }}
+                                    </span>
+
+                                </div>
+
+                                <span class="badge bg-danger">
+                                    Overdue
+                                </span>
+
+                            </div>
+
+                            {% if activity.description %}
+
+                                <p class="mt-2 mb-1">
+                                    {{ activity.description|linebreaksbr }}
+                                </p>
+
+                            {% endif %}
+
+                            <small class="text-danger">
+
+                                Due:
+                                {{ activity.due_date|date:"d M Y, h:i A" }}
+
+                            </small>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-success mb-0">
+
+                    No overdue follow-ups.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- All Activities -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">
+                Activity History
+            </h5>
+
+            <a
+                href="{% url 'activity_create' lead.pk %}"
+                class="btn btn-success btn-sm"
+            >
+                + Add Activity
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if activities %}
+
+                <div class="list-group">
+
+                    {% for activity in activities %}
+
+                        <div class="list-group-item">
+
+                            <div class="d-flex justify-content-between">
+
+                                <div>
+
+                                    <h6 class="mb-1">
+                                        {{ activity.subject }}
+                                    </h6>
+
+                                    <span class="badge bg-info text-dark">
+                                        {{ activity.get_activity_type_display }}
+                                    </span>
+
+                                </div>
+
+                                {% if activity.completed %}
+
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                            {% if activity.description %}
+
+                                <p class="mt-2 mb-1">
+                                    {{ activity.description|linebreaksbr }}
+                                </p>
+
+                            {% endif %}
+
+                            {% if activity.due_date %}
+
+                                <small class="text-muted">
+
+                                    Due:
+                                    {{ activity.due_date|date:"d M Y, h:i A" }}
+
+                                </small>
+
+                                <br>
+
+                            {% endif %}
+
+                            <small class="text-muted">
+
+                                Created by:
+                                {{ activity.user.username }}
+
+                                ·
+
+                                {{ activity.created_at|date:"d M Y, h:i A" }}
+
+                            </small>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-info mb-0">
+
+                    No activities recorded for this lead yet.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Bottom Navigation -->
+    <div class="mb-4">
+
+        <a
+            href="{% url 'lead_list' %}"
+            class="btn btn-secondary"
+        >
+            ← Back to Leads
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
